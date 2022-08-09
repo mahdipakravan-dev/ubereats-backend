@@ -1,6 +1,8 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+// isAbstract call you not use it directly and you use it as abstract class (extends or implements)
+@InputType({ isAbstract: true })
 //👇for graphQl Automaticly generate schema👇
 @ObjectType()
 //👇for typeORM👇
@@ -14,8 +16,8 @@ export class Restaurant {
   @Column()
   name: string;
 
-  @Field(() => Boolean, { nullable: true })
-  @Column()
+  @Field(() => Boolean, { defaultValue : true})
+  @Column({ default: false })
   isVegan?: boolean;
 
   @Field(() => String)
@@ -26,7 +28,7 @@ export class Restaurant {
   @Column()
   ownerName: string;
 
-  @Field(() => Number)
-  @Column()
-  stars: number;
+  @Field(() => String , {defaultValue : "UNKNOWN"})
+  @Column({default : ""})
+  categoryName?: string;
 }
