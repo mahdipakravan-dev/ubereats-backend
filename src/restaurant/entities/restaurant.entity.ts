@@ -8,15 +8,15 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 //👇for typeORM👇
 @Entity()
 export class Restaurant {
-  @Field(() => String)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Field(() => String)
   @Column()
   name: string;
 
-  @Field(() => Boolean, { defaultValue : true})
+  @Field(() => Boolean, { defaultValue: true })
   @Column({ default: false })
   isVegan?: boolean;
 
@@ -28,7 +28,7 @@ export class Restaurant {
   @Column()
   ownerName: string;
 
-  @Field(() => String , {defaultValue : "UNKNOWN"})
-  @Column({default : ""})
+  @Field(() => String, { defaultValue: 'UNKNOWN' })
+  @Column({ default: '' })
   categoryName?: string;
 }
