@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { RestaurantModule } from './restaurant/restaurant.module';
 import { ApolloDriver } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 import * as Joi from 'joi';
-import { Restaurant } from './restaurant/entities/restaurant.entity';
+import { User } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -36,15 +36,15 @@ import { Restaurant } from './restaurant/entities/restaurant.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Restaurant],
+      entities: [User],
       synchronize: process.env.NODE_ENV === 'dev',
-      logging: process.env.NODE_ENV === 'dev'
+      logging: process.env.NODE_ENV === 'dev',
     }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: 'src/schema.gql',
     }),
-    RestaurantModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
