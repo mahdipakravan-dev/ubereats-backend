@@ -5,6 +5,7 @@ import {
   CreateAccountOutputDto,
 } from './dtos/create-account.dto';
 import { UsersService } from './users.service';
+import { LoginDto, LoginOutputDto } from './dtos/login.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => User)
@@ -17,7 +18,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => CreateAccountOutputDto)
-  async createRestaurant(
+  async register(
     @Args('input') createAccountDto: CreateAccountDto,
   ): Promise<CreateAccountOutputDto> {
     try {
@@ -36,15 +37,8 @@ export class UsersResolver {
     }
   }
 
-  // @Mutation(() => Boolean)
-  // async updateRestaurant(
-  //   @Args('input') updateRestaurantInput: UpdateRestaurantArgs,
-  // ) {
-  //   try {
-  //     await this.restaurantService.updateRestaurant(updateRestaurantInput);
-  //     return true;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
+  @Mutation(() => LoginOutputDto)
+  async login(@Args('input') loginInput: LoginDto): Promise<LoginOutputDto> {
+    return await this.usersService.login(loginInput);
+  }
 }
