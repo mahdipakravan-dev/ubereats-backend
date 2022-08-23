@@ -7,6 +7,8 @@ import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOpti
 import * as Joi from 'joi';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { JwtModule } from './jwt/jwt.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { UsersModule } from './users/users.module';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_DATABASE: Joi.string().required(),
+        TOKEN_SECRET: Joi.string().required(),
       }),
       envFilePath:
         process.env.NODE_ENV === 'dev'
@@ -44,7 +47,11 @@ import { UsersModule } from './users/users.module';
       driver: ApolloDriver,
       autoSchemaFile: 'src/schema.gql',
     }),
+    JwtModule.forRoot({
+      privateKey: process.env.TOKEN_SECRET,
+    }),
     UsersModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],
