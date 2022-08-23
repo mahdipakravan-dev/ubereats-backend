@@ -13,8 +13,8 @@ import * as Joi from 'joi';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from './jwt/jwt.module';
-import { CommonModule } from './common/common.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -46,8 +46,8 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [User],
-      synchronize: process.env.NODE_ENV === 'dev',
-      logging: process.env.NODE_ENV === 'dev',
+      // synchronize: process.env.NODE_ENV === 'dev',
+      // logging: process.env.NODE_ENV === 'dev',
     }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
@@ -60,7 +60,7 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
       privateKey: process.env.TOKEN_SECRET,
     }),
     UsersModule,
-    CommonModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

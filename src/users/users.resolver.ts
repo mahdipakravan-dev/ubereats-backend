@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { User } from './entities/user.entity';
 import {
   CreateAccountDto,
@@ -6,16 +6,18 @@ import {
 } from './dtos/create-account.dto';
 import { UsersService } from './users.service';
 import { LoginDto, LoginOutputDto } from './dtos/login.dto';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../auth/auth.guard';
+import { AuthUserDecorator } from '../auth/auth-user.decorator';
+import {
+  UserProfileInput,
+  UserProfileOutputDto,
+} from './dtos/user-account.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
-
-  @Query(() => String)
-  getThat(): string {
-    return 'true';
-  }
 
   @Mutation(() => CreateAccountOutputDto)
   async register(
@@ -43,8 +45,31 @@ export class UsersResolver {
   }
 
   @Query(() => User)
-  me(@Context('user') user): User {
-    console.log('USER ', user);
+  @UseGuards(AuthGuard)
+  me(@AuthUserDecorator() user: User): User {
     return user;
+  }
+
+  @UseGuards(AuthGuard)
+  @Query(() => UserProfileOutputDto)
+  async user(@Args() userProfileInput: UserProfileInput) {
+    try {
+      const user = await this.usersService.findById(userProfileInput.userId);
+      if (!user) {
+        return {
+          ok: false,
+          error: 'NotFound',
+        };
+      }
+      return {
+        ok: true,
+        user,
+      };
+    } catch (e) {
+      return {
+        error: e,
+        ok: false,
+      };
+    }
   }
 }
