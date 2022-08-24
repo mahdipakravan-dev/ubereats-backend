@@ -1,14 +1,20 @@
-import { PublishersEnum } from './notifier.interface';
-import { PublisherInterface } from './publisher/publisher.interface';
+import { NotifierHashMap, NotifiersEnum } from './notifier.interface';
+import { NotifierInterface } from './publisher/notifierInterface';
 import { SmsPublisher } from './publisher/sms.publisher';
+import { EmailPublisher } from './publisher/email.publisher';
 
 export class NotifierFactory {
-  private _publisher?: PublisherInterface;
-  constructor(publisher: PublishersEnum, message: any) {
-    if (publisher === PublishersEnum.SMS)
-      this._publisher = new SmsPublisher(message);
-    if (publisher === PublishersEnum.EMAIL)
-      this._publisher = new SmsPublisher(message);
+  private _publisher?: NotifierInterface;
+  constructor() {}
+
+  setPublisher<T extends keyof NotifierHashMap>(
+    notifier: T,
+    message: NotifierHashMap[T],
+  ) {
+    if (notifier === NotifiersEnum.SMS)
+      this._publisher = new SmsPublisher().setMessage(message);
+    if (notifier === NotifiersEnum.EMAIL)
+      this._publisher = new EmailPublisher().setMessage(message);
   }
 
   sendMessage() {

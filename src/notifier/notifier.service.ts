@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { NOTIFIER_OPTION } from './notifier.constant';
-import { NotifierInterface } from './notifier.interface';
+import { NotifierHashMap, NotifierInterface } from './notifier.interface';
+import { NotifierFactory } from './notifier.factory';
 
 @Injectable()
 export class NotifierService {
@@ -8,7 +9,12 @@ export class NotifierService {
     console.log('ModuleOptions is ', options);
   }
 
-  send() {
-    //@TODO use factory to send
+  send<T extends keyof NotifierHashMap>(
+    notifier: T,
+    message: NotifierHashMap[T],
+  ) {
+    const notifierFactory = new NotifierFactory();
+    notifierFactory.setPublisher(notifier, message);
+    return notifierFactory.sendMessage();
   }
 }

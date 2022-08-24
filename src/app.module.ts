@@ -64,7 +64,6 @@ import { NotifierModule } from './notifier/notifier.module';
     NotifierModule.forRoot({}),
     UsersModule,
     AuthModule,
-    NotifierModule,
   ],
   controllers: [],
   providers: [],

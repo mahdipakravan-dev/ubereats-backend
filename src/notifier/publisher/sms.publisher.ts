@@ -1,7 +1,7 @@
-import { PublisherInterface } from './publisher.interface';
+import { NotifierInterface } from './notifierInterface';
 import { NotifierMessage } from '../notifier.interface';
 
-export class SmsPublisher extends PublisherInterface<
+export class SmsPublisher extends NotifierInterface<
   NotifierMessage.Sms,
   NotifierMessage.Result
 > {

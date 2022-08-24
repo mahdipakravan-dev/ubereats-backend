@@ -1,8 +1,9 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { NotifierService } from './notifier.service';
 import { NotifierInterface } from './notifier.interface';
 import { NOTIFIER_OPTION } from './notifier.constant';
 
+@Global()
 @Module({})
 export class NotifierModule {
   static forRoot(options: NotifierInterface): DynamicModule {
@@ -15,7 +16,7 @@ export class NotifierModule {
         },
         NotifierService,
       ],
-      exports: [NotifierModule],
+      exports: [NotifierService],
     };
   }
 }

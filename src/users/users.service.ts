@@ -9,6 +9,8 @@ import { JwtService } from '../jwt/jwt.service';
 import { Verification } from './entities/verification.entity';
 import { VerifyAccountOutputDto } from './dtos/verify-account.dto';
 import { UserCheckerHelper } from './userCheckerHelper';
+import { NotifierService } from '../notifier/notifier.service';
+import { NotifiersEnum } from '../notifier/notifier.interface';
 
 @Injectable()
 export class UsersService {
@@ -18,6 +20,7 @@ export class UsersService {
     private readonly verification: Repository<Verification>,
     private readonly config: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly notifierService: NotifierService,
   ) {}
 
   async createAccount(
@@ -34,11 +37,16 @@ export class UsersService {
       };
     try {
       const user = await this.users.save(this.users.create(createAccountDto));
-      await this.verification.save(
+      const verification = await this.verification.save(
         this.verification.create({
           user,
         }),
       );
+      await this.notifierService.send(NotifiersEnum.EMAIL, {
+        message: `Verify your account using this code : ${verification.code}`,
+        subject: `Hi ${user.email} , Please Verify !`,
+        email: user.email,
+      });
       return {
         ok: true,
       };
