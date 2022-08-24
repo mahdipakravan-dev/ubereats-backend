@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '../jwt/jwt.service';
 import { Verification } from './entities/verification.entity';
 import { VerifyAccountOutputDto } from './dtos/verify-account.dto';
+import { UserCheckerHelper } from './userCheckerHelper';
 
 @Injectable()
 export class UsersService {
@@ -53,19 +54,12 @@ export class UsersService {
     try {
       const user = await this.users.findOne(
         { email: loginData.email },
-        { select: ['password'] },
+        { select: ['password', 'verified'] },
       );
-      if (!user)
-        return {
-          ok: false,
-          error: 'User Not Found',
-        };
-      const isCorrect = await user.checkPassword(loginData.password);
-      if (!isCorrect)
-        return {
-          ok: false,
-          error: 'Wrong Password',
-        };
+      const checkUserResult = await new UserCheckerHelper(
+        user,
+      ).checkLoginRequirement(loginData.password);
+      if (!checkUserResult.ok) return checkUserResult;
       const token = this.jwtService.sign({ id: user.id });
       return {
         ok: true,
