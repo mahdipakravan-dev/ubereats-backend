@@ -6,11 +6,14 @@ import { CreateAccountDto } from './dtos/create-account.dto';
 import { LoginAccountDto, LoginOutputDto } from './dtos/login-account.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '../jwt/jwt.service';
+import { Verification } from './entities/verification.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    @InjectRepository(Verification)
+    private readonly verification: Repository<Verification>,
     private readonly config: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
@@ -28,7 +31,12 @@ export class UsersService {
         error: 'There is a user already with this email',
       };
     try {
-      await this.users.save(this.users.create(createAccountDto));
+      const user = await this.users.save(this.users.create(createAccountDto));
+      await this.verification.save(
+        this.verification.create({
+          user,
+        }),
+      );
       return {
         ok: true,
       };

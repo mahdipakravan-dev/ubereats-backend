@@ -15,6 +15,7 @@ import { UsersModule } from './users/users.module';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
+import { Verification } from './users/entities/verification.entity';
 
 @Module({
   imports: [
@@ -45,9 +46,9 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User],
-      // synchronize: process.env.NODE_ENV === 'dev',
-      // logging: process.env.NODE_ENV === 'dev',
+      entities: [User, Verification],
+      synchronize: process.env.NODE_ENV === 'dev',
+      logging: process.env.NODE_ENV === 'dev',
     }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
