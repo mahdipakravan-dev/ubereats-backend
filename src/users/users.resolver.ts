@@ -25,7 +25,7 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Mutation(() => CreateAccountOutputDto)
-  async register(
+  async account_register(
     @Args('input') createAccountDto: CreateAccountDto,
   ): Promise<CreateAccountOutputDto> {
     try {
@@ -45,21 +45,15 @@ export class UsersResolver {
   }
 
   @Mutation(() => LoginOutputDto)
-  async login(
+  async account_login(
     @Args('input') loginInput: LoginAccountDto,
   ): Promise<LoginOutputDto> {
     return await this.usersService.login(loginInput);
   }
 
-  @Query(() => User)
-  @UseGuards(AuthGuard)
-  me(@AuthUserDecorator() user: User): User {
-    return user;
-  }
-
   @UseGuards(AuthGuard)
   @Query(() => UserProfileOutputDto)
-  async user(@Args() userProfileInput: UserProfileInput) {
+  async account(@Args() userProfileInput: UserProfileInput) {
     try {
       const user = await this.usersService.findById(userProfileInput.userId);
       if (!user) {
@@ -82,7 +76,7 @@ export class UsersResolver {
 
   @UseGuards(AuthGuard)
   @Mutation(() => EditAccountOutputDto)
-  async editProfile(
+  async account_edit(
     @AuthUserDecorator() authUser: User,
     @Args('input') editPartial: EditAccountInputDto,
   ) {
@@ -101,7 +95,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => VerifyAccountOutputDto)
-  async verifyAccount(
+  async account_verify(
     @Args('input') input: VerifyAccountInputDto,
   ): Promise<VerifyAccountOutputDto> {
     try {

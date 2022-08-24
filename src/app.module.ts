@@ -16,6 +16,7 @@ import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
+import { NotifierModule } from './notifier/notifier.module';
 
 @Module({
   imports: [
@@ -60,8 +61,10 @@ import { Verification } from './users/entities/verification.entity';
     JwtModule.forRoot({
       privateKey: process.env.TOKEN_SECRET,
     }),
+    NotifierModule.forRoot({}),
     UsersModule,
     AuthModule,
+    NotifierModule,
   ],
   controllers: [],
   providers: [],
