@@ -48,7 +48,7 @@ import { Verification } from './users/entities/verification.entity';
       database: process.env.DB_DATABASE,
       entities: [User, Verification],
       synchronize: process.env.NODE_ENV === 'dev',
-      logging: process.env.NODE_ENV === 'dev',
+      // logging: process.env.NODE_ENV === 'dev',
     }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,

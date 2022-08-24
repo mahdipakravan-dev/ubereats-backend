@@ -7,6 +7,7 @@ import { LoginAccountDto, LoginOutputDto } from './dtos/login-account.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '../jwt/jwt.service';
 import { Verification } from './entities/verification.entity';
+import { VerifyAccountOutputDto } from './dtos/verify-account.dto';
 
 @Injectable()
 export class UsersService {
@@ -50,7 +51,10 @@ export class UsersService {
 
   async login(loginData: LoginAccountDto): Promise<LoginOutputDto> {
     try {
-      const user = await this.users.findOne({ email: loginData.email });
+      const user = await this.users.findOne(
+        { email: loginData.email },
+        { select: ['password'] },
+      );
       if (!user)
         return {
           ok: false,
@@ -81,5 +85,23 @@ export class UsersService {
 
   async edit(id: string, editValue: Partial<User>) {
     return this.users.update({ id }, { ...editValue });
+  }
+
+  async verify(code: string): Promise<VerifyAccountOutputDto> {
+    try {
+      const verification = await this.verification.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+      if (verification) {
+        verification.user.verified = true;
+        await this.users.save({ ...verification.user });
+        await this.verification.delete(verification.id);
+        return { ok: true };
+      }
+      return { ok: false, error: 'Verification not found.' };
+    } catch (error) {
+      return { ok: false, error: 'Could not verify email.' };
+    }
   }
 }

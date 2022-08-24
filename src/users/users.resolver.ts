@@ -14,6 +14,10 @@ import {
   EditAccountInputDto,
   EditAccountOutputDto,
 } from './dtos/edit-account-input.dto';
+import {
+  VerifyAccountInputDto,
+  VerifyAccountOutputDto,
+} from './dtos/verify-account.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => User)
@@ -92,6 +96,23 @@ export class UsersResolver {
       return {
         error: e,
         ok: false,
+      };
+    }
+  }
+
+  @Mutation(() => VerifyAccountOutputDto)
+  async verifyAccount(
+    @Args('input') input: VerifyAccountInputDto,
+  ): Promise<VerifyAccountOutputDto> {
+    try {
+      await this.usersService.verify(input.code);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
       };
     }
   }
