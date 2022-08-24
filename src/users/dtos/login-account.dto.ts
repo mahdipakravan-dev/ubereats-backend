@@ -3,7 +3,7 @@ import { OutputDto } from '../../dto/output';
 import { User } from '../entities/user.entity';
 
 @InputType()
-export class LoginDto extends PickType(User, ['email', 'password']) {}
+export class LoginAccountDto extends PickType(User, ['email', 'password']) {}
 
 @ObjectType()
 export class LoginOutputDto extends OutputDto {

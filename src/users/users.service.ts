@@ -3,7 +3,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dtos/create-account.dto';
-import { LoginDto, LoginOutputDto } from './dtos/login.dto';
+import { LoginAccountDto, LoginOutputDto } from './dtos/login-account.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '../jwt/jwt.service';
 
@@ -40,7 +40,7 @@ export class UsersService {
     }
   }
 
-  async login(loginData: LoginDto): Promise<LoginOutputDto> {
+  async login(loginData: LoginAccountDto): Promise<LoginOutputDto> {
     try {
       const user = await this.users.findOne({ email: loginData.email });
       if (!user)
@@ -69,5 +69,9 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     return this.users.findOne({ id });
+  }
+
+  async edit(id: string, editValue: Partial<User>) {
+    return this.users.update({ id }, { ...editValue });
   }
 }

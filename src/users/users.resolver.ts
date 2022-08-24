@@ -5,14 +5,15 @@ import {
   CreateAccountOutputDto,
 } from './dtos/create-account.dto';
 import { UsersService } from './users.service';
-import { LoginDto, LoginOutputDto } from './dtos/login.dto';
+import { LoginAccountDto, LoginOutputDto } from './dtos/login-account.dto';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthUserDecorator } from '../auth/auth-user.decorator';
+import { UserProfileInput, UserProfileOutputDto } from './dtos/get-account.dto';
 import {
-  UserProfileInput,
-  UserProfileOutputDto,
-} from './dtos/user-account.dto';
+  EditAccountInputDto,
+  EditAccountOutputDto,
+} from './dtos/edit-account-input.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => User)
@@ -40,7 +41,9 @@ export class UsersResolver {
   }
 
   @Mutation(() => LoginOutputDto)
-  async login(@Args('input') loginInput: LoginDto): Promise<LoginOutputDto> {
+  async login(
+    @Args('input') loginInput: LoginAccountDto,
+  ): Promise<LoginOutputDto> {
     return await this.usersService.login(loginInput);
   }
 
@@ -61,6 +64,26 @@ export class UsersResolver {
           error: 'NotFound',
         };
       }
+      return {
+        ok: true,
+        user,
+      };
+    } catch (e) {
+      return {
+        error: e,
+        ok: false,
+      };
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Mutation(() => EditAccountOutputDto)
+  async editProfile(
+    @AuthUserDecorator() authUser: User,
+    @Args('input') editPartial: EditAccountInputDto,
+  ) {
+    try {
+      const user = await this.usersService.edit(authUser.id, editPartial);
       return {
         ok: true,
         user,
