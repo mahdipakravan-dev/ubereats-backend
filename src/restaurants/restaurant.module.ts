@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/restaurant.entity';
 import { RestaurantResolver } from './restaurant.resolver';
 import { RestaurantService } from './restaurant.service';
-import { Verification } from './entities/verification.entity';
+import { Restaurant } from './entities/restaurant.entity';
+import { Category } from './entities/category.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Verification])],
+  imports: [TypeOrmModule.forFeature([Restaurant, Category])],
   providers: [RestaurantService, RestaurantResolver],
   exports: [RestaurantService],
 })

@@ -17,6 +17,9 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
 import { NotifierModule } from './notifier/notifier.module';
+import { RestaurantModule } from './restaurants/restaurant.module';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
+import { Category } from './restaurants/entities/category.entity';
 
 @Module({
   imports: [
@@ -47,7 +50,7 @@ import { NotifierModule } from './notifier/notifier.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Verification],
+      entities: [User, Verification, Restaurant, Category],
       synchronize: true,
       logging: true,
     }),
@@ -64,6 +67,7 @@ import { NotifierModule } from './notifier/notifier.module';
     NotifierModule.forRoot({}),
     UsersModule,
     AuthModule,
+    RestaurantModule,
   ],
   controllers: [],
   providers: [],

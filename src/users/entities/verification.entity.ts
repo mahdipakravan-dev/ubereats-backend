@@ -3,7 +3,7 @@ import { BeforeInsert, Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { CoreEntity } from '../../common/entities/core.entity';
 import { User } from './user.entity';
 
-@InputType({ isAbstract: true })
+@InputType('VerificationInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class Verification extends CoreEntity {

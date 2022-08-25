@@ -1,13 +1,9 @@
 import { InputType, ObjectType, PickType } from '@nestjs/graphql';
-import { User } from '../entities/restaurant.entity';
+import { Restaurant } from '../entities/restaurant.entity';
 import { OutputDto } from '../../dto/output';
 
 @InputType()
-export class CreateRestaurantDto extends PickType(User, [
-  'email',
-  'password',
-  'role',
-]) {}
+export class CreateRestaurantDto extends PickType(Restaurant, []) {}
 
 @ObjectType()
-export class CreateAccountOutputDto extends OutputDto {}
+export class CreateRestaurantOutputDto extends OutputDto {}

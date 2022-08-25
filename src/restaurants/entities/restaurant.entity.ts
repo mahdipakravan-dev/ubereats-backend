@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { CoreEntity } from '../../common/entities/core.entity';
 import {
   Field,
@@ -6,9 +6,9 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import * as bcrypt from 'bcrypt';
-import { InternalServerErrorException } from '@nestjs/common';
-import { IsEmail, IsEnum, IsString } from 'class-validator';
+import { IsString, Length } from 'class-validator';
+import { Category } from './category.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum UserRole {
   CLIENT = 'client',
@@ -18,44 +18,39 @@ export enum UserRole {
 
 registerEnumType(UserRole, { name: 'UserRole' });
 
-@InputType({ isAbstract: true })
+@InputType('RestaurantInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
-export class User extends CoreEntity {
+export class Restaurant extends CoreEntity {
   @Column()
   @Field(() => String)
-  @IsEmail()
-  email: string;
-
-  @Column({ select: false })
-  @Field(() => String)
   @IsString()
-  password: string;
+  @Length(5)
+  name: string;
 
-  @Column({ type: 'enum', enum: UserRole })
-  @Field(() => UserRole)
-  @IsEnum(UserRole)
-  role: UserRole;
+  @Column()
+  @Field(() => String, { defaultValue: 'Online' })
+  @IsString()
+  @Length(5)
+  address: string;
+
+  @Column()
+  @Field(() => String, { defaultValue: 'default-avatar.png' })
+  @IsString()
+  avatar: string;
 
   @Column({ default: false })
   @Field(() => Boolean)
   verified: boolean;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword(): Promise<void> {
-    try {
-      this.password = await bcrypt.hash(this.password, 10);
-    } catch (e) {
-      throw new InternalServerErrorException();
-    }
-  }
+  @Field(() => Category, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.restaurants, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  category: Category;
 
-  async checkPassword(password: string): Promise<boolean> {
-    try {
-      return bcrypt.compare(password, this.password);
-    } catch (e) {
-      throw new InternalServerErrorException();
-    }
-  }
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.restaurants)
+  owner: User;
 }
