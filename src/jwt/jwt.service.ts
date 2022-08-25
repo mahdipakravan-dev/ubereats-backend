@@ -15,6 +15,7 @@ export class JwtService {
   }
 
   sign(payload) {
+    console.log({ payload });
     return jwt.sign(payload, this.options.privateKey);
   }
 

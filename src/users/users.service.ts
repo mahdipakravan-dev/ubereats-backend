@@ -60,7 +60,7 @@ export class UsersService {
     try {
       const user = await this.users.findOne(
         { email: loginData.email },
-        { select: ['password', 'verified'] },
+        { select: ['id', 'password', 'verified'] },
       );
       const checkUserResult = await new UserCheckerHelper(
         user,
