@@ -1,8 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { User } from './entities/restaurant.entity';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import { CreateAccountDto } from './dtos/create-account.dto';
+import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
 import { LoginAccountDto, LoginOutputDto } from './dtos/login-account.dto';
 import { JwtService } from '../jwt/jwt.service';
 import { Verification } from './entities/verification.entity';
@@ -12,7 +12,7 @@ import { NotifierService } from '../notifier/notifier.service';
 import { NotifiersEnum } from '../notifier/notifier.interface';
 
 @Injectable()
-export class UsersService {
+export class RestaurantService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Verification)
@@ -22,7 +22,7 @@ export class UsersService {
   ) {}
 
   async createAccount(
-    createAccountDto: CreateAccountDto,
+    createAccountDto: CreateRestaurantDto,
   ): Promise<{ ok: boolean; error?: string }> {
     try {
       const exist = await this.users.findOne(
