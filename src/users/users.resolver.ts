@@ -6,8 +6,6 @@ import {
 } from './dtos/create-account.dto';
 import { UsersService } from './users.service';
 import { LoginAccountDto, LoginOutputDto } from './dtos/login-account.dto';
-import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '../auth/auth.guard';
 import { AuthUserDecorator } from '../auth/auth-user.decorator';
 import { UserProfileInput, UserProfileOutputDto } from './dtos/get-account.dto';
 import {
@@ -18,6 +16,7 @@ import {
   VerifyAccountInputDto,
   VerifyAccountOutputDto,
 } from './dtos/verify-account.dto';
+import { Role } from '../auth/role.decorator';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => User)
@@ -51,7 +50,7 @@ export class UsersResolver {
     return await this.usersService.login(loginInput);
   }
 
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   @Query(() => UserProfileOutputDto)
   async account(@Args() userProfileInput: UserProfileInput) {
     try {
@@ -74,7 +73,7 @@ export class UsersResolver {
     }
   }
 
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   @Mutation(() => EditAccountOutputDto)
   async account_edit(
     @AuthUserDecorator() authUser: User,

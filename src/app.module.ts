@@ -52,7 +52,7 @@ import { Category } from './restaurants/entities/category.entity';
       database: process.env.DB_DATABASE,
       entities: [User, Verification, Restaurant, Category],
       synchronize: process.env.NODE_ENV === 'dev',
-      logging: process.env.NODE_ENV === 'dev',
+      // logging: process.env.NODE_ENV === 'dev',
     }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
@@ -65,8 +65,8 @@ import { Category } from './restaurants/entities/category.entity';
       privateKey: process.env.TOKEN_SECRET,
     }),
     NotifierModule.forRoot({}),
-    UsersModule,
     AuthModule,
+    UsersModule,
     RestaurantModule,
   ],
   controllers: [],

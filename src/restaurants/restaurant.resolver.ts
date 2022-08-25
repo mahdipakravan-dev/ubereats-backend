@@ -7,8 +7,7 @@ import {
 import { AuthUserDecorator } from '../auth/auth-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { RestaurantService } from './restaurant.service';
-import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '../auth/auth.guard';
+import { Role } from '../auth/role.decorator';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => Restaurant)
@@ -20,7 +19,7 @@ export class RestaurantResolver {
     return 'Hi';
   }
 
-  @UseGuards(AuthGuard)
+  @Role(['OWNER'])
   @Mutation(() => CreateRestaurantOutputDto)
   async restaurant_create(
     @AuthUserDecorator() user: User,

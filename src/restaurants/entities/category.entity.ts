@@ -14,7 +14,7 @@ export class Category extends CoreEntity {
   @Length(5)
   name: string;
 
-  @Column()
+  @Column({ default: 'default-avatar.png' })
   @Field(() => String, { defaultValue: 'default-avatar.png' })
   @IsString()
   avatar: string;
@@ -23,4 +23,9 @@ export class Category extends CoreEntity {
   @OneToMany(() => Restaurant, (restaurant) => restaurant.category)
   @JoinColumn()
   restaurants: Restaurant[];
+
+  @Field(() => String)
+  @Column({ unique: true })
+  @IsString()
+  slug: string;
 }
