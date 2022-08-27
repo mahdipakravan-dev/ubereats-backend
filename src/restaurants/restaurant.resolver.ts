@@ -20,6 +20,10 @@ import {
   AllRestaurantsInput,
   AllRestaurantsOutput,
 } from './dtos/all-restaurants.dto';
+import {
+  SearchRestaurantDto,
+  SearchRestaurantOutputDto,
+} from './dtos/search-restaurant.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => Restaurant)
@@ -94,5 +98,12 @@ export class RestaurantResolver {
         ok: false,
       };
     }
+  }
+
+  @Query((returns) => SearchRestaurantOutputDto)
+  restaurant_search(
+    @Args('input') searchRestaurantInput: SearchRestaurantDto,
+  ): Promise<SearchRestaurantOutputDto> {
+    return this.restaurantService.searchRestaurantByName(searchRestaurantInput);
   }
 }

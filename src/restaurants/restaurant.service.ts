@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 import { Restaurant } from './entities/restaurant.entity';
 import { User } from '../users/entities/user.entity';
 import {
@@ -19,6 +19,10 @@ import {
   AllRestaurantsInput,
   AllRestaurantsOutput,
 } from './dtos/all-restaurants.dto';
+import {
+  SearchRestaurantDto,
+  SearchRestaurantOutputDto,
+} from './dtos/search-restaurant.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -184,6 +188,29 @@ export class RestaurantService {
         ok: false,
         error: 'Could not load restaurants',
       };
+    }
+  }
+
+  async searchRestaurantByName({
+    query,
+    page,
+  }: SearchRestaurantDto): Promise<SearchRestaurantOutputDto> {
+    try {
+      const [restaurants, totalResults] = await this.restaurant.findAndCount({
+        where: {
+          name: Raw((name) => `${name} ILIKE '%${query}%'`),
+        },
+        skip: (page - 1) * 25,
+        take: 25,
+      });
+      return {
+        ok: true,
+        restaurants,
+        totalResults,
+        totalPages: Math.ceil(totalResults / 25),
+      };
+    } catch {
+      return { ok: false, error: 'Could not search for restaurants' };
     }
   }
 }
