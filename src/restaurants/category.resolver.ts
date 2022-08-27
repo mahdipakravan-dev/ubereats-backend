@@ -1,7 +1,8 @@
-import { Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { RestaurantService } from './restaurant.service';
 import { Category } from './entities/category.entity';
 import { AllCategoriesOutputDto } from './dtos/all-categories.dto';
+import { CategoryDto, CategoryOutput } from './dtos/get-categories.dto';
 
 //This is Resolver of Category for graphQL
 @Resolver(() => Category)
@@ -28,5 +29,13 @@ export class CategoryResolver {
         error,
       };
     }
+  }
+
+  @Query(() => CategoryOutput)
+  category(@Args('input') categoryInput: CategoryDto): Promise<CategoryOutput> {
+    return this.restaurantService.findCategoryBySlug({
+      slug: categoryInput.slug,
+      page: categoryInput.page,
+    });
   }
 }

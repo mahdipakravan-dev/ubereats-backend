@@ -16,7 +16,6 @@ import {
   DeleteRestaurantDto,
   DeleteRestaurantOutputDto,
 } from './dtos/delete-restaurant.dto';
-import { CategoryDto, CategoryOutput } from './dtos/get-categories.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => Restaurant)
@@ -83,10 +82,5 @@ export class RestaurantResolver {
         error,
       };
     }
-  }
-
-  @Query(() => CategoryOutput)
-  category(@Args() categoryInput: CategoryDto): Promise<CategoryOutput> {
-    return this.restaurantService.findCategoryBySlug(categoryInput.slug);
   }
 }
