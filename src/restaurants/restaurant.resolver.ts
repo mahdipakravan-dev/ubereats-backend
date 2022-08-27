@@ -12,6 +12,10 @@ import {
   EditRestaurantDto,
   EditRestaurantOutputDto,
 } from './dtos/edit-restaurant.dto';
+import {
+  DeleteRestaurantDto,
+  DeleteRestaurantOutputDto,
+} from './dtos/delete-restaurant.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => Restaurant)
@@ -50,6 +54,25 @@ export class RestaurantResolver {
   ): Promise<EditRestaurantOutputDto> {
     try {
       await this.restaurantService.editRestaurant(user, input);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  @Role(['OWNER'])
+  @Mutation(() => DeleteRestaurantOutputDto)
+  async restaurant_delete(
+    @AuthUserDecorator() user: User,
+    @Args('input') input: DeleteRestaurantDto,
+  ): Promise<EditRestaurantOutputDto> {
+    try {
+      await this.restaurantService.deleteRestaurant(user, input);
       return {
         ok: true,
       };
