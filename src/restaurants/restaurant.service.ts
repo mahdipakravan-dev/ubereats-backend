@@ -116,4 +116,12 @@ export class RestaurantService {
       };
     }
   }
+
+  async allCategories() {
+    return this.categories.find({});
+  }
+
+  countRestaurants(category: Category) {
+    return this.restaurant.count({ category });
+  }
 }
