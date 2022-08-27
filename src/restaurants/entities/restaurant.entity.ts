@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  RelationId,
+} from 'typeorm';
 import { CoreEntity } from '../../common/entities/core.entity';
 import {
   Field,
@@ -9,6 +16,7 @@ import {
 import { IsString, Length } from 'class-validator';
 import { Category } from './category.entity';
 import { User } from '../../users/entities/user.entity';
+import { Dish } from './dish.entity';
 
 export enum UserRole {
   CLIENT = 'client',
@@ -43,6 +51,7 @@ export class Restaurant extends CoreEntity {
   @Field(() => Boolean)
   verified: boolean;
 
+  //Restaurant has one Category
   @Field(() => Category, { nullable: true })
   @ManyToOne(() => Category, (category) => category.restaurants, {
     onDelete: 'SET NULL',
@@ -56,4 +65,10 @@ export class Restaurant extends CoreEntity {
 
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
+
+  //Restaurant Have many dishes
+  @Field(() => [Dish])
+  @OneToMany(() => Dish, (dish) => dish.restaurant)
+  @JoinColumn()
+  dishes: Dish[];
 }

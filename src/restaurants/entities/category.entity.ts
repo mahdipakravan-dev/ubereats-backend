@@ -19,6 +19,7 @@ export class Category extends CoreEntity {
   @IsString()
   avatar: string;
 
+  //Category has many restaurants
   @Field(() => [Restaurant])
   @OneToMany(() => Restaurant, (restaurant) => restaurant.category)
   @JoinColumn()

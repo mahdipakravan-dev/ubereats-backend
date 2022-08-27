@@ -1,11 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { RestaurantService } from './restaurant.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User, UserRole } from './entities/restaurant.entity';
+import { UserRole } from './entities/restaurant.entity';
 import { Verification } from './entities/verification.entity';
 import { NotifierService } from '../notifier/notifier.service';
 import { JwtService } from '../jwt/jwt.service';
 import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 
 /*Fake DB*/
 const mockedRepository = () => ({
