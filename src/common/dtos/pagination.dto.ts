@@ -14,4 +14,7 @@ export class PaginationOutput extends OutputDto {
 
   @Field(() => Number, { nullable: true })
   totalPages?: number;
+
+  @Field(() => Number, { nullable: true })
+  totalResults?: number;
 }

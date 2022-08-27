@@ -16,16 +16,15 @@ import {
   DeleteRestaurantDto,
   DeleteRestaurantOutputDto,
 } from './dtos/delete-restaurant.dto';
+import {
+  AllRestaurantsInput,
+  AllRestaurantsOutput,
+} from './dtos/all-restaurants.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => Restaurant)
 export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
-
-  @Query(() => String)
-  hi() {
-    return 'Hi';
-  }
 
   @Role(['OWNER'])
   @Mutation(() => CreateRestaurantOutputDto)
@@ -80,6 +79,19 @@ export class RestaurantResolver {
       return {
         ok: false,
         error,
+      };
+    }
+  }
+
+  @Query(() => AllRestaurantsOutput)
+  async restaurant_all(
+    @Args('input') input: AllRestaurantsInput,
+  ): Promise<AllRestaurantsOutput> {
+    try {
+      return await this.restaurantService.allRestaurants(input);
+    } catch (error) {
+      return {
+        ok: false,
       };
     }
   }
