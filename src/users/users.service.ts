@@ -79,11 +79,11 @@ export class UsersService {
     }
   }
 
-  async findById(id: string): Promise<User> {
+  async findById(id: number): Promise<User> {
     return this.users.findOne({ id });
   }
 
-  async edit(id: string, editValue: Partial<User>) {
+  async edit(id: number, editValue: Partial<User>) {
     return this.users.update({ id }, { ...editValue });
   }
 

@@ -8,6 +8,10 @@ import { AuthUserDecorator } from '../auth/auth-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { RestaurantService } from './restaurant.service';
 import { Role } from '../auth/role.decorator';
+import {
+  EditRestaurantDto,
+  EditRestaurantOutputDto,
+} from './dtos/edit-restaurant.dto';
 
 //This is Resolver of restaurant for graphQL
 @Resolver(() => Restaurant)
@@ -36,5 +40,27 @@ export class RestaurantResolver {
         error: e,
       };
     }
+  }
+
+  @Role(['OWNER'])
+  @Mutation(() => EditRestaurantOutputDto)
+  async restaurant_edit(
+    @AuthUserDecorator() user: User,
+    @Args('input') input: EditRestaurantDto,
+  ): Promise<EditRestaurantOutputDto> {
+    try {
+      await this.restaurantService.editRestaurant(user, input);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+    // return {
+    //   ok: true,
+    // };
   }
 }

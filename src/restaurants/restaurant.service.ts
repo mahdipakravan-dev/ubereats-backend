@@ -7,13 +7,17 @@ import {
   CreateRestaurantOutputDto,
 } from './dtos/create-restaurant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  EditRestaurantDto,
+  EditRestaurantOutputDto,
+} from './dtos/edit-restaurant.dto';
+import { CategoryRepository } from './repositories/category.repository';
 import { Category } from './entities/category.entity';
 
 @Injectable()
 export class RestaurantService {
   constructor(
-    @InjectRepository(Category)
-    private readonly categories: Repository<Category>,
+    private readonly categories: CategoryRepository,
     @InjectRepository(Restaurant)
     private readonly restaurant: Repository<Restaurant>,
   ) {}
@@ -25,15 +29,10 @@ export class RestaurantService {
     try {
       const newRestaurant = this.restaurant.create(restaurant);
       newRestaurant.owner = user;
-      const categoryName = restaurant.categoryName.trim().toLowerCase();
-      const slug = categoryName.replace(/ /g, '-');
-      let category = await this.categories.findOne({ slug });
-      if (!category) {
-        category = await this.categories.save(
-          this.categories.create({ name: categoryName, slug }),
-        );
-      }
-      newRestaurant.category = category;
+
+      newRestaurant.category = await this.categories.getOrCreateCategory(
+        restaurant.categoryName,
+      );
       await this.restaurant.save(newRestaurant);
       return {
         ok: true,
@@ -42,6 +41,46 @@ export class RestaurantService {
       return {
         error: e,
         ok: false,
+      };
+    }
+  }
+
+  async editRestaurant(
+    owner: User,
+    input: EditRestaurantDto,
+  ): Promise<EditRestaurantOutputDto> {
+    try {
+      const restaurant = await this.restaurant.findOneOrFail(
+        input.restaurantId,
+        {
+          loadRelationIds: false,
+        },
+      );
+      if (!restaurant) return { ok: false, error: 'Restaurant Not Found !' };
+      if (owner.id.toString() !== restaurant.ownerId.toString())
+        return {
+          ok: false,
+          error: 'Its non of your business',
+        };
+      let category: Category = null;
+      if (input.categoryName)
+        category = await this.categories.getOrCreateCategory(
+          input.categoryName,
+        );
+      await this.restaurant.save([
+        {
+          id: input.restaurantId,
+          ...input,
+          ...(category && { category }),
+        },
+      ]);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
       };
     }
   }

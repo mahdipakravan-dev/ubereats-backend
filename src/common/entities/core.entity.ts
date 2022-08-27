@@ -7,8 +7,8 @@ import { Field } from '@nestjs/graphql';
 
 export class CoreEntity {
   @PrimaryGeneratedColumn()
-  @Field(() => String)
-  id: string;
+  @Field(() => Number)
+  id: number;
 
   @CreateDateColumn()
   @Field(() => Date)
