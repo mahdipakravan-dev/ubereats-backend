@@ -12,6 +12,7 @@ import { IsString, Length } from 'class-validator';
 import { Category } from './category.entity';
 import { User } from '../../users/entities/user.entity';
 import { Dish } from './dish.entity';
+import { Order } from '../../order/entities/oder.entity';
 
 @InputType('RestaurantInputType', { isAbstract: true })
 @ObjectType()
@@ -58,6 +59,12 @@ export class Restaurant extends CoreEntity {
   @OneToMany(() => Dish, (dish) => dish.restaurant)
   @JoinColumn()
   dishes: Dish[];
+
+  //Restaurant has many order
+  @Field(() => [Order])
+  @OneToMany(() => Order, (order) => order.restaurant)
+  @JoinColumn()
+  order: Order[];
 
   // @RelationId((dish: Dish) => dish.restaurant)
   // restaurantId: number;

@@ -6,7 +6,7 @@ import { Restaurant } from './restaurant.entity';
 
 @InputType('DishOptionItemType')
 @ObjectType()
-class DishOptionsItem {
+class DishChoiceItem {
   @Field(() => String)
   name: string;
 
@@ -16,12 +16,12 @@ class DishOptionsItem {
 
 @InputType('DishOptionInputType')
 @ObjectType()
-class DishOptions {
+class DishChoice {
   @Field(() => String)
   name: string;
 
-  @Field(() => [DishOptionsItem])
-  choices: DishOptionsItem[];
+  @Field(() => [DishChoiceItem])
+  choices: DishChoiceItem[];
 
   @Field(() => Number)
   price: number;
@@ -61,7 +61,7 @@ export class Dish extends CoreEntity {
   })
   restaurant: Restaurant;
 
-  @Field(() => [DishOptions], { nullable: true })
+  @Field(() => [DishChoice], { nullable: true })
   @Column({ type: 'json', nullable: true })
-  options: DishOptions[];
+  options: DishChoice[];
 }
