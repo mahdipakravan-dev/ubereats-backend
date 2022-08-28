@@ -25,6 +25,7 @@ import {
 } from './dtos/search-restaurant.dto';
 import { CreateDishDto, CreateDishOutputDto } from './dtos/create-dish.dto';
 import { Dish } from './entities/dish.entity';
+import { EditDishDto } from './dtos/edit-dish.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -250,6 +251,42 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not create dish',
+      };
+    }
+  }
+
+  async editDish(
+    owner: User,
+    editDishInput: EditDishDto,
+  ): Promise<EditRestaurantOutputDto> {
+    try {
+      const dish = await this.dishes.findOne(editDishInput.dishId, {
+        relations: ['restaurant'],
+      });
+      console.log(dish);
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Dish not found',
+        };
+      }
+      if (owner.id !== dish.restaurant.ownerId) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+      await this.dishes.save(
+        this.dishes.create([{ id: editDishInput.dishId, ...editDishInput }]),
+      );
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        ok: false,
+        error: 'Could Edit create dish',
       };
     }
   }

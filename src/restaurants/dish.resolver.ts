@@ -5,6 +5,7 @@ import { CreateDishDto, CreateDishOutputDto } from './dtos/create-dish.dto';
 import { AuthUserDecorator } from '../auth/auth-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../auth/role.decorator';
+import { EditDishDto, EditDishOutputDto } from './dtos/edit-dish.dto';
 
 //This is Resolver of Category for graphQL
 @Resolver(() => Dish)
@@ -19,10 +20,23 @@ export class DishResolver {
   ): Promise<CreateDishOutputDto> {
     console.log(user, input);
     try {
-      await this.restaurantService.createDish(user, { ...input });
+      return this.restaurantService.createDish(user, { ...input });
+    } catch (error) {
       return {
-        ok: true,
+        ok: false,
+        error,
       };
+    }
+  }
+
+  @Role(['OWNER'])
+  @Mutation(() => EditDishOutputDto)
+  async dish_edit(
+    @AuthUserDecorator() user: User,
+    @Args('input') input: EditDishDto,
+  ): Promise<EditDishOutputDto> {
+    try {
+      return await this.restaurantService.editDish(user, input);
     } catch (error) {
       return {
         ok: false,
