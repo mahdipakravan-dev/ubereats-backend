@@ -64,7 +64,7 @@ export class Order extends CoreEntity {
   @Field(() => OrderStatus)
   status: OrderStatus;
 
-  @Column()
-  @Field(() => Number)
+  @Column({ nullable: true })
+  @Field(() => Number, { nullable: true })
   totalPrice: number;
 }
