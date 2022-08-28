@@ -4,6 +4,19 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsNumber, IsString, Length } from 'class-validator';
 import { Restaurant } from './restaurant.entity';
 
+@InputType('DishOptionInputType')
+@ObjectType()
+class DishOptions {
+  @Field(() => String)
+  name: string;
+
+  @Field(() => [String])
+  choices: string[];
+
+  @Field(() => Number)
+  price: number;
+}
+
 @InputType('RestaurantDishType', { isAbstract: true })
 @ObjectType()
 @Entity()
@@ -19,7 +32,7 @@ export class Dish extends CoreEntity {
   @IsNumber()
   price: number;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   @IsString()
   photo: string;
@@ -37,4 +50,8 @@ export class Dish extends CoreEntity {
     nullable: true,
   })
   restaurant: Restaurant;
+
+  @Field(() => [DishOptions], { nullable: true })
+  @Column({ type: 'json', nullable: true })
+  options: DishOptions[];
 }

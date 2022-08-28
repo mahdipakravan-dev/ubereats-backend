@@ -7,24 +7,11 @@ import {
   RelationId,
 } from 'typeorm';
 import { CoreEntity } from '../../common/entities/core.entity';
-import {
-  Field,
-  InputType,
-  ObjectType,
-  registerEnumType,
-} from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
 import { Category } from './category.entity';
 import { User } from '../../users/entities/user.entity';
 import { Dish } from './dish.entity';
-
-export enum UserRole {
-  CLIENT = 'client',
-  OWNER = 'owner',
-  DELIVERY = 'delivery',
-}
-
-registerEnumType(UserRole, { name: 'UserRole' });
 
 @InputType('RestaurantInputType', { isAbstract: true })
 @ObjectType()
@@ -71,4 +58,7 @@ export class Restaurant extends CoreEntity {
   @OneToMany(() => Dish, (dish) => dish.restaurant)
   @JoinColumn()
   dishes: Dish[];
+
+  // @RelationId((dish: Dish) => dish.restaurant)
+  // restaurantId: number;
 }
