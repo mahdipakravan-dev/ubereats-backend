@@ -16,6 +16,6 @@ export class OrderResolver {
     @AuthUserDecorator() user: User,
     @Args('input') createOrderInput: CreateOrderDto,
   ) {
-    return this.orderService.createOrder();
+    return this.orderService.createOrder(user, createOrderInput);
   }
 }

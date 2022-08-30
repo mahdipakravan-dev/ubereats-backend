@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { User } from '../users/entities/user.entity';
 import { CreateOrderDto, CreateOrderOutputDto } from './dtos/create-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Restaurant } from '../restaurants/entities/restaurant.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { Dish } from '../restaurants/entities/dish.entity';
+import { keyBy } from 'lodash';
 
 @Injectable()
 export class OrderService {
@@ -15,6 +16,9 @@ export class OrderService {
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
     @InjectRepository(Dish) private readonly dishes: Repository<Dish>,
+    @InjectRepository(Order) private readonly orders: Repository<Order>,
+    @InjectRepository(OrderItem)
+    private readonly orderItems: Repository<OrderItem>,
   ) {}
 
   async createOrder(
@@ -23,68 +27,66 @@ export class OrderService {
   ): Promise<CreateOrderOutputDto> {
     try {
       const restaurant = await this.restaurants.findOne(restaurantId);
-      if (!restaurant) {
-        return {
-          ok: false,
-          error: 'Restaurant not found',
-        };
-      }
-      let orderFinalPrice = 0;
-      const orderItems: OrderItem[] = [];
-      for (const item of items) {
-        const dish = await this.dishes.findOne(item.dishId);
-        if (!dish) {
-          return {
-            ok: false,
-            error: 'Dish not found.',
-          };
-        }
-        let dishFinalPrice = dish.price;
-        for (const itemOption of item.options) {
-          const dishOption = dish.options.find(
-            (dishOption) => dishOption.name === itemOption.name,
-          );
-          if (dishOption) {
-            if (dishOption.extra) {
-              dishFinalPrice = dishFinalPrice + dishOption.extra;
-            } else {
-              const dishOptionChoice = dishOption.choices?.find(
-                (optionChoice) => optionChoice.name === itemOption.choice,
-              );
-              if (dishOptionChoice) {
-                if (dishOptionChoice.extra) {
-                  dishFinalPrice = dishFinalPrice + dishOptionChoice.extra;
-                }
-              }
-            }
-          }
-        }
-        orderFinalPrice = orderFinalPrice + dishFinalPrice;
-        const orderItem = await this.orderItems.save(
-          this.orderItems.create({
-            dish,
-            options: item.options,
-          }),
-        );
-        orderItems.push(orderItem);
-      }
-      const order = await this.orders.save(
-        this.orders.create({
-          customer,
-          restaurant,
-          total: orderFinalPrice,
-          items: orderItems,
-        }),
+      if (!restaurant)
+        throw new InternalServerErrorException('Restaurant not found');
+      const dishes = keyBy(
+        await Promise.all(
+          items?.map((item) => this.dishes.findOneOrFail(item.dishId)),
+        ),
+        'id',
       );
+      let finalValue = items.reduce((prevVal, currentItem) => {
+        const currentValDishOptions = keyBy(
+          dishes[currentItem.dishId].options.map((option) => ({
+            ...option,
+            choices: keyBy(option.choices, 'name'),
+          })),
+          'name',
+        );
+        const optionsPrice = currentItem.options.reduce(
+          (prevValue, currentItem) => {
+            const currentOptionOnDb = currentValDishOptions[currentItem.name];
+            const choicePrice =
+              currentOptionOnDb?.choices[currentItem.choice.toString()]?.price;
+            if (!choicePrice)
+              throw new InternalServerErrorException(
+                'selected PriceItem not founded ',
+              );
+
+            return prevValue + choicePrice;
+          },
+          0,
+        );
+        return prevVal + dishes[currentItem.dishId].price + optionsPrice;
+      }, 0);
+      //   orderFinalPrice = orderFinalPrice + dishFinalPrice;
+      //   const orderItem = await this.orderItems.save(
+      //     this.orderItems.create({
+      //       dish,
+      //       options: item.options,
+      //     }),
+      //   );
+      //   orderItems.push(orderItem);
+      // }
+      // const order = await this.orders.save(
+      //   this.orders.create({
+      //     customer,
+      //     restaurant,
+      //     totalPrice: orderFinalPrice,
+      //     items: orderItems,
+      //   }),
+      // );
+      // await this.pubSub.publish(NEW_PENDING_ORDER, {
+      //   pendingOrders: { order, ownerId: restaurant.ownerId },
+      // });
       return {
         ok: true,
-        orderId: order.id,
+        orderId: finalValue,
       };
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
       return {
         ok: false,
-        error: 'Could not create order.',
+        error: error.message,
       };
     }
   }
