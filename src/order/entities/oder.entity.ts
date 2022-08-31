@@ -18,10 +18,11 @@ import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 import { OrderItem } from './order-item.entity';
 
 export enum OrderStatus {
-  Pending = 'PENDING',
-  Cooking = 'COOKING',
-  PickedUp = 'PICKED_UP',
-  Delivered = 'DELIVERED',
+  Pending = 'Pending',
+  Cooking = 'Cooking',
+  Cooked = 'Cooked',
+  PickedUp = 'PickedUp',
+  Delivered = 'Delivered',
 }
 
 registerEnumType(OrderStatus, { name: 'OrderStatus' });
