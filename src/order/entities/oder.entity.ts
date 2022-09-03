@@ -18,11 +18,11 @@ import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 import { OrderItem } from './order-item.entity';
 
 export enum OrderStatus {
-  Pending = 'Pending',
-  Cooking = 'Cooking',
-  Cooked = 'Cooked',
-  PickedUp = 'PickedUp',
-  Delivered = 'Delivered',
+  Pending = 'PENDING',
+  Cooking = 'COOKING',
+  Cooked = 'COOKED',
+  PickedUp = 'PICKED_UP',
+  Delivered = 'DELIVERED',
 }
 
 registerEnumType(OrderStatus, { name: 'OrderStatus' });
@@ -61,7 +61,14 @@ export class Order extends CoreEntity {
   @JoinTable()
   items: OrderItem[];
 
-  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.Pending })
+  @Column({
+    name: 'status',
+    enumName: 'statusEnum',
+    nullable: false,
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.Pending,
+  })
   @Field(() => OrderStatus, { defaultValue: OrderStatus.Pending })
   status: OrderStatus;
 

@@ -5,7 +5,7 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver } from '@nestjs/apollo';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
@@ -66,12 +66,19 @@ import { Order } from './order/entities/oder.entity';
       synchronize: process.env.NODE_ENV === 'dev',
       // logging: process.env.NODE_ENV === 'dev',
     }),
-    GraphQLModule.forRoot({
+    GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      installSubscriptionHandlers: true,
       autoSchemaFile: 'src/schema.gql',
-      context: ({ req }) => ({
-        user: req['user'],
-      }),
+      // subscriptions: {
+      //   'graphql-ws': true,
+      // },
+      context: ({ req, connection }) => {
+        console.log(connection);
+        return {
+          user: req['user'],
+        };
+      },
     }),
     JwtModule.forRoot({
       privateKey: process.env.TOKEN_SECRET,
